@@ -1,0 +1,29 @@
+// Load the AOI from a custom asset
+var aoi = ee.FeatureCollection('projects/ee-shobhit007/assets/Kosi_basin');
+
+// Load the elevation data, selecting the 'DEM' band
+var dataset = ee.ImageCollection('COPERNICUS/DEM/GLO30').select('DEM');
+
+// Visualization parameters with an adjusted palette for better elevation differentiation
+var elevationVis = {
+  min: 200.0,  // Set this according to the minimum elevation of your AOI if known
+  max: 3000.0, // Set this according to the maximum elevation of your AOI
+  palette: [
+    '0000ff', '0099ff', '00ff00', 'ffff00', 'ff0000', 'ffffff'
+  ]
+};
+
+// Center the map on the AOI and visualize the DEM
+Map.centerObject(aoi, 8);  // The second parameter '8' is the zoom level, adjust as necessary
+Map.addLayer(dataset.mean().clip(aoi), elevationVis, 'DEM');
+
+// Export the visualized DEM to Google Drive
+Export.image.toDrive({
+  image: dataset.mean().clip(aoi),
+  description: 'Copernicus_DEM',
+  scale: 30,  // The scale in meters; adjust based on the resolution needed and GEE quota
+  region: aoi.geometry(),  // Use the geometry of the AOI for export
+  fileFormat: 'GeoTIFF',
+  folder: 'GEE_Exports',
+  maxPixels: 1e9  // Adjust this based on the size and detail of your export
+});
