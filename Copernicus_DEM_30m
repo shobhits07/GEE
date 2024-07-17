@@ -1,3 +1,5 @@
+//GEE Javascript
+
 // Load the AOI from a custom asset
 var aoi = ee.FeatureCollection('projects/ee-shobhit007/assets/Kosi_basin');
 
